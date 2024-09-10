@@ -5,10 +5,16 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node .",
-    "dev": "nodemon ."
+    "dev": "nodemon -L ."
   },
   "keywords": [],
   "author": "Jamili, Yhestin Syth B.",
   "license": "ISC",
-  "description": "This is the authentication service for art-c motorcycle parts shop and service"
+  "description": "This is the authentication service for art-c motorcycle parts shop and service",
+  "dependencies": {
+    "express": "^4.20.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
 }
