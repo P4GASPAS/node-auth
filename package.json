@@ -13,7 +13,8 @@
   "license": "ISC",
   "description": "This is the authentication service for art-c motorcycle parts shop and service",
   "dependencies": {
-    "express": "^4.20.0"
+    "express": "^4.20.0",
+    "mysql2": "^3.11.2"
   },
   "devDependencies": {
     "nodemon": "^3.1.4"
