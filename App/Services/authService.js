@@ -1,7 +1,23 @@
 import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
+import dotenv from 'dotenv'
 import db from "../../Database/init.js"
+dotenv.config()
 
 const saltRounds = 10
+
+const signToken = (user) => {
+
+    const basicUserInfo = {
+        id: user.id,
+        first_name: user.first_name,
+        middle_name: user.middle_name,
+        last_name: user.last_name,
+        email: user.email,
+    }
+
+    return jwt.sign(basicUserInfo, process.env.ACCESS_TOKEN_SECRET)
+}
 
 const Service = {
 
@@ -12,9 +28,11 @@ const Service = {
         try {
             const [user] = await db('users').where('email', payload.email)
             const auth = await bcrypt.compare(payload.password, user.password)
+            const token = signToken(user)
             return {
                 authenticated: auth,
-                user: user
+                user: user,
+                token: token
             }
         } catch (e) {
             console.error('Error authenticating the data:', e.message)
@@ -42,7 +60,9 @@ const Service = {
             const user = await db('users').where('id', id).first()
             console.log('Insert successful')
 
-            return {status: "ok", user: user}
+            const token = signToken(user)
+
+            return {status: "ok", user: user, token: token}
         } catch (e) {
             console.error('Error inserting data:', e.message)
             throw new Error(e.message)

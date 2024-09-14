@@ -76,8 +76,8 @@ CREATE TABLE infos (
 CREATE TABLE users (
     id bigint(20) UNSIGNED NOT NULL,
     first_name varchar(255) NOT NULL,
-    middle_name varchar(255) NOT NULL,
-    last_name varchar(255) NOT NULL,
+    middle_name varchar(255) DEFAULT NULL,
+    last_name varchar(255) DEFAULT NULL,
     nickname varchar(255) DEFAULT NULL,
     authorization varchar(255) NOT NULL DEFAULT 'customer',
     email varchar(255) NOT NULL UNIQUE,
