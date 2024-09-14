@@ -1,4 +1,7 @@
+import bcrypt from 'bcryptjs'
 import db from "../../Database/init.js"
+
+const saltRounds = 10
 
 const Service = {
 
@@ -8,24 +11,28 @@ const Service = {
 
     register: async (payload) => {
 
-      if (payload === null) return
-      
-      try{
-        const [id] = await db('users').insert({
-          first_name: payload.first_name,
-          middle_name: payload.middle_name,
-          last_name: payload.last_name,
-          email: payload.email,
-          password: payload.password
-        })
-        const user = await db('users').where('id', id).first()
-        console.log('Insert successful')
+        if (payload === null) return
 
-        return {status: "ok", user: user}
-      } catch (e) {
-        console.error('Error inserting data:', e)
-        throw e
-      }
+        try{
+            const [id] = await db('users').insert({
+            first_name: payload.first_name,
+            middle_name: payload.middle_name,
+            last_name: payload.last_name,
+            nickname: payload.nickname || null,
+            email: payload.email,
+            email_verified_at: payload.email_verified_at || null,
+            password: await bcrypt.hash(payload.password, saltRounds),
+            ip: payload.ip || null,
+            user_agent: payload.userAgent || null,
+            })
+            const user = await db('users').where('id', id).first()
+            console.log('Insert successful')
+
+            return {status: "ok", user: user}
+        } catch (e) {
+            console.error('Error inserting data:', e.message)
+            throw new Error(e.message)
+        }
 
     }
 

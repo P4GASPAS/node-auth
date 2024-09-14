@@ -1,7 +1,9 @@
 import express from 'express'
+import cors from 'cors'
 import { api } from './Route/api.js'
 
 const server = express()
+server.use(cors())
 server.use(express.json())
 
 server.get('/', (req, res) => res.send('Welcome to auth service'))
