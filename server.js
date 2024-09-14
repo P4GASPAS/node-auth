@@ -2,7 +2,7 @@ import express from 'express'
 import { api } from './Route/api.js'
 
 const server = express()
-server.use(express.json)
+server.use(express.json())
 
 server.get('/', (req, res) => res.send('Welcome to auth service'))
 
@@ -12,3 +12,9 @@ const PORT = 2000
 server.listen(PORT, () => {
     console.log(`Server is running at http://localhost:${PORT}`)
 })
+
+process.on('SIGINT', async () => {
+    console.log('Shutting down server...');
+    await knex.destroy();
+    process.exit(0);
+});

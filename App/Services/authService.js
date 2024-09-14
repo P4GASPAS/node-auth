@@ -7,49 +7,30 @@ const Service = {
     },
 
     register: async (payload) => {
-        await db('users').insert({
-            first_name: 'yhestin',
-            middle_name: 'basas',
-            last_name: 'jamili',
-            authorization: 'customer',
-            email: 'yhestin10@gmail.com',
-            password: 'yhestin123',
-            info_id: null,
-            github_id: null,
-            facebook_id: null,
-            google_id: null,
-            motorcycle_id: null
-          })
-          .then(() => console.log('Insert successful'))
-          .catch(err => console.error('Insert failed:', err))
-          .finally(() => {
-            db.destroy();
-          });
-    }
 
-    // register: async (payload) => {
-    //     await db('users').insert({
-    //         first_name: 'yhestin',
-    //         middle_name: 'basas',
-    //         last_name: 'jamili',
-    //         authorization: 'customer',
-    //         email: 'yhestin10@gmail.com',
-    //         password: 'yhestin123',
-    //         info_id: null,
-    //         github_id: null,
-    //         facebook_id: null,
-    //         google_id: null,
-    //         motorcycle_id: null
-    //       })
-    //       .then(() => console.log('Insert successful'))
-    //       .catch(err => console.error('Insert failed:', err))
-    //       .finally(() => {
-    //         db.destroy();
-    //       });
-    // }
+      if (payload === null) return
+      
+      try{
+        const [id] = await db('users').insert({
+          first_name: payload.first_name,
+          middle_name: payload.middle_name,
+          last_name: payload.last_name,
+          email: payload.email,
+          password: payload.password
+        })
+        const user = await db('users').where('id', id).first()
+        console.log('Insert successful')
+
+        return {status: "ok", user: user}
+      } catch (e) {
+        console.error('Error inserting data:', e)
+        throw e
+      }
+
+    }
 
 }
 
-console.log(Service.register(null))
+Service.register(null)
 
 export default Service

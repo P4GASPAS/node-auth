@@ -1,3 +1,5 @@
+CREATE DATABASE node_auth IF NOT EXIST;
+
 CREATE TABLE locations (
     id bigint(20) UNSIGNED NOT NULL,
     address varchar(255) DEFAULT NULL,
