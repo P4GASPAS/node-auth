@@ -29,6 +29,15 @@ const Controller = {
         } catch (e) {
             res.status(500).send(e.message)
         }
+    },
+
+    verifyToken: async (req, res) => {
+        try {
+            const result = await Service.verifyToken(req.headers)
+            res.send(result)
+        } catch (e) {
+            res.status(500).send(e.message)
+        }
     }
     
 }

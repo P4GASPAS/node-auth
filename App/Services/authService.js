@@ -6,17 +6,20 @@ dotenv.config()
 
 const saltRounds = 10
 
-const signToken = (user) => {
-
-    const basicUserInfo = {
+const formatUser = (user) => {
+    return {
         id: user.id,
         first_name: user.first_name,
         middle_name: user.middle_name,
         last_name: user.last_name,
+        authorization: user.authorization,
         email: user.email,
     }
+}
 
-    return jwt.sign(basicUserInfo, process.env.ACCESS_TOKEN_SECRET)
+const signToken = (user) => {
+
+    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET)
 }
 
 const Service = {
@@ -28,10 +31,11 @@ const Service = {
         try {
             const [user] = await db('users').where('email', payload.email)
             const auth = await bcrypt.compare(payload.password, user.password)
-            const token = signToken(user)
+
+            const token = signToken(formatUser(user))
             return {
                 authenticated: auth,
-                user: user,
+                user: formatUser(user),
                 token: token
             }
         } catch (e) {
@@ -60,12 +64,33 @@ const Service = {
             const user = await db('users').where('id', id).first()
             console.log('Insert successful')
 
-            const token = signToken(user)
+            const token = signToken(formatUser(user))
 
-            return {status: "ok", user: user, token: token}
+            return {
+                status: "ok",
+                user: formatUser(user),
+                token: token
+            }
         } catch (e) {
             console.error('Error inserting data:', e.message)
             throw new Error(e.message)
+        }
+
+    },
+
+    verifyToken: async (payload) => {
+
+        if(payload === null) return
+
+        const token = payload.authorization && payload.authorization.split(' ')[1]
+
+        if (token === null) throw new Error("Invalid token")
+        
+        const user = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
+
+        return {
+            token: token,
+            user: user
         }
 
     }
