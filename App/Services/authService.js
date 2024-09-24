@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
 import db from "../../Database/init.js"
+import OauthService from './oauthService.js'
 dotenv.config()
 
 const saltRounds = 10
@@ -93,10 +94,69 @@ const Service = {
             user: user
         }
 
+    },
+
+    storeOauth: async (code, provider) => {
+
+        if(provider == "github") {
+
+            try{
+                const userId = null
+    
+                const githubUser = await OauthService.getUserGithub(code)
+    
+                const id = await db('users').select('id').where('email', githubUser.email).first()
+    
+                if (id != undefined) userId = id
+    
+                await db('githubs')
+                    .insert({
+                        github_unique_id: githubUser.id,
+                        name: githubUser.name,
+                        twitter_name: githubUser.twitter_username || null,
+                        avatar: githubUser.avatar_url,
+                        page_url: githubUser.html_url,
+                        github_joined_date: githubUser.created_at,
+                        user_id: userId
+                    })
+                    .onConflict('github_unique_id')
+                    .merge()
+                    .then(() => {
+                        console.log('Insert or update successful');
+                    })
+                    .catch(err => {
+                        console.error('Insert or update failed:', err);
+                    });
+
+                return {
+                    githubUser: githubUser
+                }
+
+            } catch (e) {
+                console.log(e.message)
+            }
+
+            return {
+                
+            }
+
+        }
+        else if(provider == "facebook") {
+            const facebookUser = await OauthService.getUserFacebook(code)
+        }
+        else if(provider == "google") {
+            const googleUser = await OauthService.getUserGoogle(code)
+        }
+
+        return {
+            githubUser: githubUser || null,
+            facebookUser: facebookUser || null,
+            googleUser: googleUser || null
+        }
     }
 
 }
 
-Service.register(null)
+// Service.register(null)
 
 export default Service

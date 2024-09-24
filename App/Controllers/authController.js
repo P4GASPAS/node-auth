@@ -38,6 +38,17 @@ const Controller = {
         } catch (e) {
             res.status(500).send(e.message)
         }
+    },
+
+    oauth: async (req, res) => {
+        try {
+            const code = req.body.code
+            const provider = req.body.provider
+            const result = await Service.storeOauth(code, provider)
+            await res.send(result)
+        } catch (e) {
+            res.status(500).send(e.message)
+        }
     }
     
 }
