@@ -44,7 +44,8 @@ const Controller = {
         try {
             const code = req.body.code
             const provider = req.body.provider
-            const result = await Service.storeOauth(code, provider)
+            const userId = req.body.userId
+            const result = await Service.storeOauth(code, provider, userId)
             await res.send(result)
         } catch (e) {
             res.status(500).send(e.message)

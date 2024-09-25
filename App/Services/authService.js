@@ -96,18 +96,18 @@ const Service = {
 
     },
 
-    storeOauth: async (code, provider) => {
+    storeOauth: async (code, provider, userId) => {
 
         if(provider == "github") {
 
             try{
-                const userId = null
+                let dbUserId = null
     
                 const githubUser = await OauthService.getUserGithub(code)
     
                 const id = await db('users').select('id').where('email', githubUser.email).first()
     
-                if (id != undefined) userId = id
+                if (id != undefined || id != null) dbUserId = id
     
                 await db('githubs')
                     .insert({
@@ -117,7 +117,7 @@ const Service = {
                         avatar: githubUser.avatar_url,
                         page_url: githubUser.html_url,
                         github_joined_date: githubUser.created_at,
-                        user_id: userId
+                        user_id: dbUserId != null ? dbUserId.id : userId
                     })
                     .onConflict('github_unique_id')
                     .merge()
